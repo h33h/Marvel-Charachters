@@ -9,7 +9,7 @@ import Foundation
 
 protocol CharachterViewDelegate: AnyObject {
     func displayAllCharachters(charachters: [Charachter])
-    func displaySelectedCharachter(charachter: Charachter)
+    func displaySelectedCharachter(charachters: [Charachter])
 }
 class CharachterPresenter {
     private let charachterService: CharachterService
@@ -20,8 +20,8 @@ class CharachterPresenter {
     func setViewDelegate(charachterViewDelegate: CharachterViewDelegate?) {
         self.charachterDelegate = charachterViewDelegate
     }
-    func getAllCharachters(limit: Int) {
-        charachterService.getCharachters(limit: limit) { [weak self] data, response, _ in
+    func getMoreCharachters(offset: Int, limit: Int) {
+        charachterService.getCharachters(offset: offset, limit: limit) { [weak self] data, response, _ in
             guard let data = data else { return }
             let jsonDecoder = JSONDecoder()
             let response = try? jsonDecoder.decode(CharachterResponse.self, from: data)
@@ -30,14 +30,13 @@ class CharachterPresenter {
             }
         }
     }
-    func getSelectedCharachter(id: Int) {
-        charachterService.getCharachterByID(id: id) { [weak self] data, response, _ in
+    func getSelectedCharachter(nameStartsWith: String) {
+        charachterService.getCharachterByName(nameStartsWith: nameStartsWith) { [weak self] data, response, _ in
             guard let data = data else { return }
             let jsonDecoder = JSONDecoder()
             let response = try? jsonDecoder.decode(CharachterResponse.self, from: data)
             if let response = response {
-                guard let char = response.data.results.first else { return }
-                self?.charachterDelegate?.displaySelectedCharachter(charachter: char)
+                self?.charachterDelegate?.displaySelectedCharachter(charachters: response.data.results)
             }
         }
     }

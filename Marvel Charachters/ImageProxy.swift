@@ -11,11 +11,9 @@ let imageCache = NSCache<NSString, NSData>()
 
 class ImageProxy: LoadImageServiceProtocol {
     private let imageService: LoadImageServiceProtocol
-    
     init(service: LoadImageServiceProtocol) {
         self.imageService = service
     }
-    
     func laodImage(url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
         if let cachedImage = imageCache.object(forKey: url.absoluteString as NSString) {
             return completion(cachedImage as Data, nil, nil)
