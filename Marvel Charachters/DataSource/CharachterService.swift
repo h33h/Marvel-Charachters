@@ -21,19 +21,19 @@ class CharachterService {
             }
         return hash.map { String(format: "%02x", $0) }.joined()
     }
-    func getAllCharachtersURL(limit: Int) -> URL? {
-        URL(string: "https://gateway.marvel.com:443/v1/public/characters?limit=\(limit)&ts=\(ts)&apikey=\(publicKey)&hash=\(md5)")
+    func getAllCharachtersURL(offset: Int, limit: Int) -> URL? {
+        URL(string: "https://gateway.marvel.com:443/v1/public/characters?offset=\(offset)&limit=\(limit)&ts=\(ts)&apikey=\(publicKey)&hash=\(md5)")
     }
-    func getCharachterByIDURL(id: Int) -> URL? {
-        URL(string: "https://gateway.marvel.com:443/v1/public/characters/\(id)?ts=\(ts)&apikey=\(publicKey)&hash=\(md5)")
+    func getCharachterByNameURL(nameStartsWith: String) -> URL? {
+        URL(string: "https://gateway.marvel.com:443/v1/public/characters?nameStartsWith=\(nameStartsWith)&ts=\(ts)&apikey=\(publicKey)&hash=\(md5)")
     }
-    func getCharachters(limit: Int, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
-        guard let url = getAllCharachtersURL(limit: limit) else { return completion(nil, nil, nil) }
+    func getCharachters(offset: Int, limit: Int, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+        guard let url = getAllCharachtersURL(offset: offset, limit: limit) else { return completion(nil, nil, nil) }
         let session = URLSession.shared.dataTask(with: url, completionHandler: completion)
         session.resume()
     }
-    func getCharachterByID(id: Int, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
-        guard let url = getCharachterByIDURL(id: id) else { return completion(nil, nil, nil) }
+    func getCharachterByName(nameStartsWith: String, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+        guard let url = getCharachterByNameURL(nameStartsWith: nameStartsWith) else { return completion(nil, nil, nil) }
         let session = URLSession.shared.dataTask(with: url, completionHandler: completion)
         session.resume()
     }
