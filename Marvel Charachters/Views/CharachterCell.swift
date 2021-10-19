@@ -9,18 +9,33 @@ import UIKit
 
 class CharachterCell: UICollectionViewCell {
 
+    private let imageLoadProxy = ImageProxy(service: LoadImageService())
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var nameLabel: UILabel!
-    
     func setHeroNameLabel (name: String) {
         DispatchQueue.main.async {
             self.nameLabel.text = name
         }
     }
-    
     func setPreviewHeroImage (image: UIImage?) {
         DispatchQueue.main.async {
             self.imageView.image = image
+        }
+    }
+    func configure(charachter: Charachter?) {
+        guard let charachter = charachter else {
+            return
+        }
+        setHeroNameLabel(name: charachter.name)
+        DispatchQueue.global().async {
+            if let imageUrl = charachter.thumbnail.getImageUrl() {
+                self.imageLoadProxy.laodImage(url: imageUrl) { [weak self] data, _, _ in
+                    guard let data = data else {
+                        return
+                    }
+                    self?.setPreviewHeroImage(image: UIImage(data: data))
+                }
+            }
         }
     }
     override func awakeFromNib() {
