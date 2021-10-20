@@ -62,13 +62,8 @@ extension MainViewController: CharachterViewDelegate {
         }
     }
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "Detail", sender: charachters[indexPath.row])
-    }
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.destination is DetailCharachterVC {
-            if let sender = sender as? Charachter {
-                (segue.destination as? DetailCharachterVC)?.configure(charachter: sender)
-            }
-        }
+        let detailVC = DetailCharachterVC()
+        detailVC.setCharachter(charachter: charachters[indexPath.row])
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }

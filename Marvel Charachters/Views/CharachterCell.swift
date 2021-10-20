@@ -22,13 +22,11 @@ class CharachterCell: UICollectionViewCell {
             self.imageView.image = image
         }
     }
-    func configure(charachter: Charachter?) {
-        guard let charachter = charachter else {
-            return
-        }
-        setHeroNameLabel(name: charachter.name)
+    func configure(charachter: Charachter) {
+        guard let name = charachter.name else { return }
+        setHeroNameLabel(name: name)
         DispatchQueue.global().async {
-            if let imageUrl = charachter.thumbnail.getImageUrl() {
+            if let imageUrl = charachter.thumbnail?.getImageUrl() {
                 self.imageLoadProxy.laodImage(url: imageUrl) { [weak self] data, _, _ in
                     guard let data = data else {
                         return
