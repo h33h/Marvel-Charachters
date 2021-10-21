@@ -11,6 +11,7 @@ class MainViewController: UICollectionViewController {
     private let charachterPresenter = CharachterPresenter(charachterService: CharachterService())
     private let reuseIdentifier = String(describing: CharachterCell.self)
     private var lastIndexPath = IndexPath(row: 0, section: 0)
+    private var currentFilter = HeroFilter.noSorted
     private var charachters = [Charachter]()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,10 +23,13 @@ class MainViewController: UICollectionViewController {
         collectionView.collectionViewLayout = layout
         charachterPresenter.setViewDelegate(charachterViewDelegate: self)
         collectionView.register(UINib(nibName: reuseIdentifier, bundle: nil), forCellWithReuseIdentifier: reuseIdentifier)
-        charachterPresenter.getMoreCharachters(offset: 0, limit: 20)
+        charachterPresenter.getCharachtersBy(filter: currentFilter)
     }
     func getPresenter() -> CharachterPresenter {
         charachterPresenter
+    }
+    func setCurrentFilter(filter: HeroFilter) {
+        currentFilter = filter
     }
     func clearAllCharachters() {
         charachters.removeAll()
@@ -57,7 +61,7 @@ extension MainViewController: CharachterViewDelegate {
     }
     override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if (indexPath.row % 15 == 0) && lastIndexPath.row < indexPath.row {
-            charachterPresenter.getMoreCharachters(offset: charachters.count, limit: 20)
+            charachterPresenter.getCharachtersBy(filter: currentFilter, offset: charachters.count, limit: 20)
             lastIndexPath = indexPath
         }
     }
