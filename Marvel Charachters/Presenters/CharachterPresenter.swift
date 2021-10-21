@@ -20,8 +20,8 @@ class CharachterPresenter {
         self.charachterDelegate = charachterViewDelegate
     }
     func getCharachtersBy(filter: HeroFilter, offset: Int = 0, limit: Int = 20) {
-        charachterService.invokeGetCharachter(type: filter, offset: offset, limit: limit) { [weak self] data, response, _ in
-            guard let data = data else { return }
+        charachterService.invokeGetCharachter(type: filter, offset: offset, limit: limit) { [weak self] data in
+            guard let data = data?.data else { return }
             let jsonDecoder = JSONDecoder()
             let response = try? jsonDecoder.decode(CharacterDataWrapper.self, from: data)
             if let response = response?.data?.results {

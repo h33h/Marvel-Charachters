@@ -89,7 +89,7 @@ class DetailCharachterVC: UIViewController {
         }
         DispatchQueue.global().async {
             if let imageUrl = charachter.thumbnail?.getImageUrl() {
-                self.imageLoadProxy.laodImage(url: imageUrl) { [weak self] data, _, _ in
+                self.imageLoadProxy.laodImage(url: imageUrl) { [weak self] data in
                     guard let data = data else {
                         return
                     }

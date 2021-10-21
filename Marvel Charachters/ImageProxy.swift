@@ -14,16 +14,16 @@ class ImageProxy: LoadImageServiceProtocol {
     init(service: LoadImageServiceProtocol) {
         self.imageService = service
     }
-    func laodImage(url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+    func laodImage(url: URL, completion: @escaping (Data?) -> Void) {
         if let cachedImage = imageCache.object(forKey: url.absoluteString as NSString) {
-            return completion(cachedImage as Data, nil, nil)
+            return completion(cachedImage as Data)
         }
-        imageService.laodImage(url: url) { data, response, error in
+        imageService.laodImage(url: url) { data in
             guard let data = data else {
-                return completion(nil, response, error)
+                return completion(nil)
             }
             imageCache.setObject(data as NSData, forKey: url.absoluteString as NSString)
-            completion(data, response, error)
+            completion(data)
         }
     }
 }

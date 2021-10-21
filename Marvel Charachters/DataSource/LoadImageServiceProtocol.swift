@@ -6,7 +6,8 @@
 //
 
 import Foundation
+import Alamofire
 
 protocol LoadImageServiceProtocol {
-    func laodImage (url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> Void)
+    func laodImage (url: URL, completion: @escaping (Data?) -> Void)
 }
