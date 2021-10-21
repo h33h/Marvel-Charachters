@@ -9,23 +9,9 @@ import UIKit
 
 class MainViewController: UICollectionViewController {
     private let charachterPresenter = CharachterPresenter(charachterService: CharachterService())
-    private let imageLoadProxy = ImageProxy(service: LoadImageService())
     private let reuseIdentifier = String(describing: CharachterCell.self)
-    private var charachters = [Charachter]() {
-        didSet {
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-            }
-        }
-    }
-    private var selectedCharachter: Charachter? {
-        didSet {
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-            }
-        }
-    }
-
+    private var lastIndexPath = IndexPath(row: 0, section: 0)
+    private var charachters = [Charachter]()
     override func viewDidLoad() {
         super.viewDidLoad()
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -36,33 +22,48 @@ class MainViewController: UICollectionViewController {
         collectionView.collectionViewLayout = layout
         charachterPresenter.setViewDelegate(charachterViewDelegate: self)
         collectionView.register(UINib(nibName: reuseIdentifier, bundle: nil), forCellWithReuseIdentifier: reuseIdentifier)
-        charachterPresenter.getAllCharachters(limit: 20)
+        charachterPresenter.getMoreCharachters(offset: 0, limit: 20)
+    }
+    func getPresenter() -> CharachterPresenter {
+        charachterPresenter
+    }
+    func clearAllCharachters() {
+        charachters.removeAll()
     }
 }
 
 extension MainViewController: CharachterViewDelegate {
     func displayAllCharachters(charachters: [Charachter]) {
-        self.charachters = charachters
+        charachters.forEach { self.charachters.append($0) }
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
     }
-    func displaySelectedCharachter(charachter: Charachter) {
-        self.selectedCharachter = charachter
+    func displaySelectedCharachter(charachters: [Charachter]) {
+        self.charachters = charachters
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
     }
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? CharachterCell
         guard let cell = cell else { return UICollectionViewCell() }
         let char = charachters[indexPath.row]
-        cell.setHeroNameLabel(name: char.name)
-        if let imageUrl = char.thumbnail.getImageUrl() {
-            imageLoadProxy.laodImage(url: imageUrl) { data, _, _ in
-                guard let data = data else {
-                    return
-                }
-                cell.setPreviewHeroImage(image: UIImage(data: data))
-            }
-        }
+        cell.configure(charachter: char)
         return cell
     }
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         charachters.count
+    }
+    override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if (indexPath.row % 15 == 0) && lastIndexPath.row < indexPath.row {
+            charachterPresenter.getMoreCharachters(offset: charachters.count, limit: 20)
+            lastIndexPath = indexPath
+        }
+    }
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let detailVC = DetailCharachterVC()
+        detailVC.setCharachter(charachter: charachters[indexPath.row])
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }
