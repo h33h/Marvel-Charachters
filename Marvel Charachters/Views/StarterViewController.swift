@@ -13,6 +13,8 @@ class StarterViewController: UIViewController {
     @IBOutlet private var backButton: UIButton!
     @IBOutlet private var filterButton: UIButton!
     @IBOutlet private var titleView: UIView!
+    @IBOutlet private var bottomActivity: UIActivityIndicatorView!
+    @IBOutlet private var centerActivity: UIActivityIndicatorView!
     @IBOutlet private var searchButton: UIButton!
     @IBOutlet private var titleLabel: UIStackView!
     override func viewDidLoad() {
@@ -21,6 +23,8 @@ class StarterViewController: UIViewController {
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.sizeToFit()
         navigationController?.navigationBar.backgroundColor = .white
+        guard let mainVC = (self.children[0] as? MainViewController) else { return }
+        mainVC.setActivities(center: centerActivity, bottom: bottomActivity)
     }
     @IBAction private func filterAction(_ sender: Any) {
         searchButton.isHidden = true
@@ -129,6 +133,7 @@ class StarterViewController: UIViewController {
         guard let mainVC = (children[0] as? MainViewController) else { return }
         guard let text = sender.text else { return }
         mainVC.clearAllCharachters()
+        mainVC.collectionScrollTop()
         mainVC.getPresenter().getCharachtersBy(filter: .nameStartsWith(text))
         mainVC.setCurrentFilter(filter: .nameStartsWith(text))
     }

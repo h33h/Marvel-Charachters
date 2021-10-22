@@ -87,16 +87,14 @@ class DetailCharachterVC: UIViewController {
         if let description = charachter.description {
             setHeroDescriptionLabel(name: description)
         }
-        DispatchQueue.global().async {
             if let imageUrl = charachter.thumbnail?.getImageUrl() {
-                self.imageLoadProxy.laodImage(url: imageUrl) { [weak self] data in
+                self.imageLoadProxy.loadImage(url: imageUrl) { [weak self] data in
                     guard let data = data else {
                         return
                     }
                     self?.setPreviewHeroImage(image: UIImage(data: data))
                 }
             }
-        }
     }
     @objc
     func backButtonAction(sender: UIBarButtonItem) {

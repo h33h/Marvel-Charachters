@@ -10,9 +10,19 @@ import UIKit
 class MainViewController: UICollectionViewController {
     private let charachterPresenter = CharachterPresenter(charachterService: CharachterService())
     private let reuseIdentifier = String(describing: CharachterCell.self)
+    private var activityBottom: UIActivityIndicatorView?
+    private var activityCenter: UIActivityIndicatorView?
     private var lastIndexPath = IndexPath(row: 0, section: 0)
-    private var currentFilter = HeroFilter.noSorted
-    private var charachters = [Charachter]()
+    private var currentFilter = HeroFilter.noSorted {
+        didSet {
+            collectionScrollTop()
+        }
+    }
+    private var charachters = [Charachter]() {
+        didSet {
+            collectionView.reloadData()
+        }
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -25,35 +35,39 @@ class MainViewController: UICollectionViewController {
         collectionView.register(UINib(nibName: reuseIdentifier, bundle: nil), forCellWithReuseIdentifier: reuseIdentifier)
         charachterPresenter.getCharachtersBy(filter: currentFilter)
     }
+    func setActivities(center: UIActivityIndicatorView, bottom: UIActivityIndicatorView) {
+        self.activityCenter = center
+        self.activityBottom = bottom
+    }
     func getPresenter() -> CharachterPresenter {
         charachterPresenter
     }
     func setCurrentFilter(filter: HeroFilter) {
         currentFilter = filter
+        activityCenter?.startAnimating()
     }
     func clearAllCharachters() {
         charachters.removeAll()
+        lastIndexPath = IndexPath(row: 0, section: 0)
+        activityCenter?.startAnimating()
+    }
+    func collectionScrollTop() {
+        collectionView.setContentOffset(.zero, animated: false)
     }
 }
 
 extension MainViewController: CharachterViewDelegate {
     func displayAllCharachters(charachters: [Charachter]) {
-        charachters.forEach { self.charachters.append($0) }
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-        }
-    }
-    func displaySelectedCharachter(charachters: [Charachter]) {
-        self.charachters = charachters
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-        }
+        self.charachters.append(contentsOf: charachters)
+        activityBottom?.stopAnimating()
+        activityCenter?.stopAnimating()
     }
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? CharachterCell
         guard let cell = cell else { return UICollectionViewCell() }
         let char = charachters[indexPath.row]
-        cell.configure(charachter: char)
+        guard let name = char.name, let imageUrl = char.thumbnail?.getImageUrl() else { return UICollectionViewCell() }
+            cell.configure(name: name, imageUrl: imageUrl)
         return cell
     }
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -62,6 +76,7 @@ extension MainViewController: CharachterViewDelegate {
     override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if (indexPath.row % 15 == 0) && lastIndexPath.row < indexPath.row {
             charachterPresenter.getCharachtersBy(filter: currentFilter, offset: charachters.count, limit: 20)
+            activityBottom?.startAnimating()
             lastIndexPath = indexPath
         }
     }
