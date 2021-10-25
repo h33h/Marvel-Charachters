@@ -11,30 +11,36 @@ class CharachterCell: UICollectionViewCell {
 
     private let imageLoadProxy = ImageProxy(service: LoadImageService())
     @IBOutlet private var imageView: UIImageView!
+    @IBOutlet private var activity: UIActivityIndicatorView!
     @IBOutlet private var nameLabel: UILabel!
-    func setHeroNameLabel (name: String) {
+    private func setHeroNameLabel (name: String) {
         DispatchQueue.main.async {
             self.nameLabel.text = name
         }
     }
-    func setPreviewHeroImage (image: UIImage?) {
+    private func setPreviewHeroImage (image: UIImage?) {
         DispatchQueue.main.async {
-            self.imageView.image = image
+            guard let image = image else {
+                self.imageView.image = nil
+                self.imageView.isHidden = true
+                self.activity.startAnimating()
+                return
+            }
+                self.imageView.image = image
+                self.activity.stopAnimating()
+                self.imageView.isHidden = false
         }
     }
-    func configure(charachter: Charachter) {
-        guard let name = charachter.name else { return }
+    func configure(name: String, imageUrl: URL) {
         setHeroNameLabel(name: name)
-        DispatchQueue.global().async {
-            if let imageUrl = charachter.thumbnail?.getImageUrl() {
-                self.imageLoadProxy.laodImage(url: imageUrl) { [weak self] data, _, _ in
-                    guard let data = data else {
-                        return
-                    }
-                    self?.setPreviewHeroImage(image: UIImage(data: data))
-                }
+        imageLoadProxy.loadImage(url: imageUrl) { [weak self] data in
+            if let data = data {
+                self?.setPreviewHeroImage(image: UIImage(data: data))
             }
         }
+    }
+    override func prepareForReuse() {
+        self.setPreviewHeroImage(image: nil)
     }
     override func awakeFromNib() {
         super.awakeFromNib()

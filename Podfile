@@ -6,6 +6,7 @@ target 'Marvel Charachters' do
   use_frameworks!
 
 pod 'SwiftLint'
+pod 'Alamofire', '~> 5.4'
 
   # Pods for Marvel Charachters
 

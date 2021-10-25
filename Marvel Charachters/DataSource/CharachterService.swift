@@ -6,62 +6,107 @@
 //
 
 import Foundation
+import Alamofire
+
+enum HeroFilter {
+    case noSorted
+    case nameStartsWith(String)
+    case fullName(String)
+    case filter(CharachterFilter)
+    case modifiedSince(String)
+    case comicsID(Int)
+    case seriesID(Int)
+    case eventsID(Int)
+    case storiesID(Int)
+}
 
 class CharachterService {
     private var requestBuider = RequestBuilder()
-    func getCharachters(offset: Int, limit: Int, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+    private func getCharachters(offset: Int, limit: Int, completion: @escaping (AFDataResponse<Any>?) -> Void) {
         requestBuider.addOffset(offset: offset)
         requestBuider.addLimit(limit: limit)
-        guard let url = requestBuider.getUrl() else { return completion(nil, nil, nil) }
-        let session = URLSession.shared.dataTask(with: url, completionHandler: completion)
-        session.resume()
+        guard let url = requestBuider.getUrl() else { return completion(nil) }
+        AF.request(url).responseJSON(completionHandler: completion)
     }
-    func getCharachtersByName(nameStartsWith: String, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+    private func getCharachtersByName(nameStartsWith: String, offset: Int, limit: Int, completion: @escaping (AFDataResponse<Any>?) -> Void) {
+        requestBuider.addOffset(offset: offset)
+        requestBuider.addLimit(limit: limit)
         requestBuider.addSearchByNameStartsWith(nameStartsWith: nameStartsWith)
-        guard let url = requestBuider.getUrl() else { return completion(nil, nil, nil) }
-        let session = URLSession.shared.dataTask(with: url, completionHandler: completion)
-        session.resume()
+        guard let url = requestBuider.getUrl() else { return completion(nil) }
+        AF.request(url).responseJSON(completionHandler: completion)
     }
-    func getCharachterByFullName(name: String, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+    private func getCharachterByFullName(name: String, offset: Int, limit: Int, completion: @escaping (AFDataResponse<Any>?) -> Void) {
+        requestBuider.addOffset(offset: offset)
+        requestBuider.addLimit(limit: limit)
         requestBuider.addSearchByFullName(name: name)
-        guard let url = requestBuider.getUrl() else { return completion(nil, nil, nil) }
-        let session = URLSession.shared.dataTask(with: url, completionHandler: completion)
-        session.resume()
+        guard let url = requestBuider.getUrl() else { return completion(nil) }
+        AF.request(url).responseJSON(completionHandler: completion)
     }
-    func getCharachtersByFilter(filter: CharachterFilter, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+    private func getCharachtersByFilter(filter: CharachterFilter,
+                                        offset: Int,
+                                        limit: Int,
+                                        completion: @escaping (AFDataResponse<Any>?) -> Void) {
+        requestBuider.addOffset(offset: offset)
+        requestBuider.addLimit(limit: limit)
         requestBuider.addFilter(filter: filter)
-        guard let url = requestBuider.getUrl() else { return completion(nil, nil, nil) }
-        let session = URLSession.shared.dataTask(with: url, completionHandler: completion)
-        session.resume()
+        guard let url = requestBuider.getUrl() else { return completion(nil) }
+        AF.request(url).responseJSON(completionHandler: completion)
     }
-    func getCharachtersModifiedSince(date: String, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+    private func getCharachtersModifiedSince(date: String, offset: Int, limit: Int, completion: @escaping (AFDataResponse<Any>?) -> Void) {
+        requestBuider.addOffset(offset: offset)
+        requestBuider.addLimit(limit: limit)
         requestBuider.addModifiedSince(date: date)
-        guard let url = requestBuider.getUrl() else { return completion(nil, nil, nil) }
-        let session = URLSession.shared.dataTask(with: url, completionHandler: completion)
-        session.resume()
+        guard let url = requestBuider.getUrl() else { return completion(nil) }
+        AF.request(url).responseJSON(completionHandler: completion)
     }
-    func getCharachtersByComicsID(id: Int, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+    private func getCharachtersByComicsID(id: Int, offset: Int, limit: Int, completion: @escaping (AFDataResponse<Any>?) -> Void) {
+        requestBuider.addOffset(offset: offset)
+        requestBuider.addLimit(limit: limit)
         requestBuider.addSearchByComicsId(id: id)
-        guard let url = requestBuider.getUrl() else { return completion(nil, nil, nil) }
-        let session = URLSession.shared.dataTask(with: url, completionHandler: completion)
-        session.resume()
+        guard let url = requestBuider.getUrl() else { return completion(nil) }
+        AF.request(url).responseJSON(completionHandler: completion)
     }
-    func getCharachtersBySeriesID(id: Int, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+    private func getCharachtersBySeriesID(id: Int, offset: Int, limit: Int, completion: @escaping (AFDataResponse<Any>?) -> Void) {
+        requestBuider.addOffset(offset: offset)
+        requestBuider.addLimit(limit: limit)
         requestBuider.addSearchBySeriesId(id: id)
-        guard let url = requestBuider.getUrl() else { return completion(nil, nil, nil) }
-        let session = URLSession.shared.dataTask(with: url, completionHandler: completion)
-        session.resume()
+        guard let url = requestBuider.getUrl() else { return completion(nil) }
+        AF.request(url).responseJSON(completionHandler: completion)
     }
-    func getCharachtersByEventsID(id: Int, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+    private func getCharachtersByEventsID(id: Int, offset: Int, limit: Int, completion: @escaping (AFDataResponse<Any>?) -> Void) {
+        requestBuider.addOffset(offset: offset)
+        requestBuider.addLimit(limit: limit)
         requestBuider.addSearchByEventsId(id: id)
-        guard let url = requestBuider.getUrl() else { return completion(nil, nil, nil) }
-        let session = URLSession.shared.dataTask(with: url, completionHandler: completion)
-        session.resume()
+        guard let url = requestBuider.getUrl() else { return completion(nil) }
+        AF.request(url).responseJSON(completionHandler: completion)
     }
-    func getCharachtersByStoriesID(id: Int, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+    private func getCharachtersByStoriesID(id: Int, offset: Int, limit: Int, completion: @escaping (AFDataResponse<Any>?) -> Void) {
+        requestBuider.addOffset(offset: offset)
+        requestBuider.addLimit(limit: limit)
         requestBuider.addSearchByStoriesId(id: id)
-        guard let url = requestBuider.getUrl() else { return completion(nil, nil, nil) }
-        let session = URLSession.shared.dataTask(with: url, completionHandler: completion)
-        session.resume()
+        guard let url = requestBuider.getUrl() else { return completion(nil) }
+        AF.request(url).responseJSON(completionHandler: completion)
+    }
+    func invokeGetCharachter(type: HeroFilter, offset: Int, limit: Int, completion: @escaping (AFDataResponse<Any>?) -> Void) {
+        switch type {
+        case .noSorted:
+            getCharachters(offset: offset, limit: limit, completion: completion)
+        case .nameStartsWith(let string):
+            getCharachtersByName(nameStartsWith: string, offset: offset, limit: limit, completion: completion)
+        case .fullName(let string):
+            getCharachterByFullName(name: string, offset: offset, limit: limit, completion: completion)
+        case .filter(let charachterFilter):
+            getCharachtersByFilter(filter: charachterFilter, offset: offset, limit: limit, completion: completion)
+        case .modifiedSince(let string):
+            getCharachtersModifiedSince(date: string, offset: offset, limit: limit, completion: completion)
+        case .comicsID(let int):
+            getCharachtersByComicsID(id: int, offset: offset, limit: limit, completion: completion)
+        case .seriesID(let int):
+            getCharachtersBySeriesID(id: int, offset: offset, limit: limit, completion: completion)
+        case .eventsID(let int):
+            getCharachtersByEventsID(id: int, offset: offset, limit: limit, completion: completion)
+        case .storiesID(let int):
+            getCharachtersByStoriesID(id: int, offset: offset, limit: limit, completion: completion)
+        }
     }
 }

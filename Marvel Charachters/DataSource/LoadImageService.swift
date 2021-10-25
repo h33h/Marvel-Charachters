@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import Alamofire
 
 class LoadImageService: LoadImageServiceProtocol {
-    func laodImage(url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
-        let sessionConfiguration = URLSessionConfiguration.default
-        sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalCacheData
-        let session = URLSession(configuration: sessionConfiguration)
-        session.dataTask(with: url, completionHandler: completion).resume()
+    func loadImage(url: URL, completion: @escaping (Data?) -> Void) {
+        AF.request(url).response { response in
+            if let response = response.data {
+                completion(response)
+            }
+        }
     }
 }
