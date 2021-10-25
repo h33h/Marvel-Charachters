@@ -33,11 +33,9 @@ class CharachterCell: UICollectionViewCell {
     }
     func configure(name: String, imageUrl: URL) {
         setHeroNameLabel(name: name)
-        imageLoadProxy.loadImage(url: imageUrl) {[weak self] data in
+        imageLoadProxy.loadImage(url: imageUrl) { [weak self] data in
             if let data = data {
                 self?.setPreviewHeroImage(image: UIImage(data: data))
-            } else {
-                self?.setPreviewHeroImage(image: nil)
             }
         }
     }
